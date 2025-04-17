@@ -1,2 +1,2 @@
-﻿using var game = new MonoGolf.Game1();
+﻿using var game = new MonoGolf.Minigolf();
 game.Run();
