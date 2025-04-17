@@ -17,6 +17,8 @@ namespace MonoGolf
         // A Vertex format structure that contains position, normal data, and one set of texture coordinates
         private BasicEffect basicEffect;
 
+        private Model cube;
+
         public Minigolf()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -62,6 +64,9 @@ namespace MonoGolf
             triangleVertices[1].Color = Color.GhostWhite;
             triangleVertices[2].Position = new Vector3(10f, 0f, -5f);
             triangleVertices[2].Color = Color.Indigo;
+
+
+            cube = Content.Load<Model>("testcube");
 
         }
 
