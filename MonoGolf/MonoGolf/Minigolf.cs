@@ -64,7 +64,7 @@ namespace MonoGolf
             GraphicsDevice.Clear(Color.Crimson);
 
             RasterizerState rasterizerState1 = new RasterizerState();
-            rasterizerState1.CullMode = CullMode.None;
+            rasterizerState1.CullMode = CullMode.CullCounterClockwiseFace;
             GraphicsDevice.RasterizerState = rasterizerState1;
 
             foreach (BasicEffect effect in cubeMesh.Effects)
