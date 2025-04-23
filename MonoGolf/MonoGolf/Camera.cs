@@ -9,14 +9,14 @@ namespace MonoGolf
         private Vector3 dir;
         private float theta;
         private float phi;
-        private float minPhi = 0;
-        private float maxPhi = MathHelper.Pi * 0.475f;
-        private float sensitivity = 0.025f;
+        private const float minPhi = 0;
+        private const float maxPhi = MathHelper.Pi * 0.475f;
+        private const float sensitivity = 0.1f;
         private Vector3 target;
         private float zoom = 20f;
-        private float minZoom = 5f;
-        private float maxZoom = 50f;
-        private float fov = MathHelper.PiOver4;
+        private const float minZoom = 5f;
+        private const float maxZoom = 50f;
+        private const float fov = MathHelper.PiOver4;
 
         public Matrix ViewMatrix { get; private set; }
         public Matrix Projection { get; private set; }
@@ -49,6 +49,15 @@ namespace MonoGolf
             float y = (float) (Math.Sin(phi));
             float z = (float) (Math.Cos(theta) * Math.Cos(phi));
             dir = new Vector3(x, y, z);
+        }
+
+        public void Pan(Vector2 v)
+        {
+            Vector3 right = Vector3.Cross(dir, Vector3.Up);
+            right.Normalize();
+            Vector3 forward = Vector3.Cross(Vector3.Up, right);
+            Vector3 move = forward * -v.Y + right * v.X;
+            target += move * zoom * 0.05f;
         }
 
         public void SetTarget(Vector3 t)

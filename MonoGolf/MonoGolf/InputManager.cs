@@ -8,8 +8,7 @@ namespace MonoGolf
         private static MouseState mouseState = new MouseState();
         private static MouseState prevState;
 
-        private static float moveSensitivity = 0.5f;
-
+        private static float moveSensitivity = 0.05f;
         private static float scrollSensitivity = 0.005f;
 
 

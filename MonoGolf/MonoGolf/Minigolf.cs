@@ -47,8 +47,11 @@ namespace MonoGolf
 
             if (InputManager.RightPressed())
             {
-                Debug.WriteLine(InputManager.GetMoveAmount());
                 camera.Rotate(InputManager.GetMoveAmount());
+            }
+            else if (InputManager.LeftPressed())
+            {
+                camera.Pan(InputManager.GetMoveAmount());
             }
             camera.Zoom(InputManager.GetScrollAmount());
             camera.UpdateViewMatrix();
