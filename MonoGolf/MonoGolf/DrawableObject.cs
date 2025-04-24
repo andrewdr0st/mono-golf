@@ -47,7 +47,7 @@ namespace MonoGolf
 
         private void UpdateWorldMatrix()
         {
-            worldMatrix = Matrix.CreateTranslation(Pos) * Matrix.CreateScale(Scale);
+            worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Pos);
         }
     }
 }

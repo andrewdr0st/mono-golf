@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -8,12 +9,9 @@ namespace MonoGolf
     public class Minigolf : Game
     {
         private GraphicsDeviceManager _graphics;
+        private Scene scene;
 
-        private Matrix worldMatrix;
-
-        private ModelMesh cubeMesh;
-
-        private Camera camera;
+        public static List<ModelMesh> MeshList { get; private set; }
 
         public Minigolf()
         {
@@ -24,18 +22,16 @@ namespace MonoGolf
 
         protected override void Initialize()
         {
-            worldMatrix = Matrix.CreateScale(new Vector3(10, 1, 10));
-
-            camera = new Camera(0, MathHelper.PiOver4, Vector3.Zero, GraphicsDevice.Viewport.AspectRatio);
-
+            MeshList = new List<ModelMesh>();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            
-            cubeMesh = Content.Load<Model>("testcube").Meshes[0];
+            MeshList.Add(Content.Load<Model>("testcube").Meshes[0]);
 
+            scene = new Hole1(this);
+            base.LoadContent();
         }
 
         protected override void Update(GameTime gameTime)
@@ -45,16 +41,7 @@ namespace MonoGolf
 
             InputManager.Update();
 
-            if (InputManager.RightPressed())
-            {
-                camera.Rotate(InputManager.GetMoveAmount());
-            }
-            else if (InputManager.LeftPressed())
-            {
-                camera.Pan(InputManager.GetMoveAmount());
-            }
-            camera.Zoom(InputManager.GetScrollAmount());
-            camera.UpdateViewMatrix();
+            scene.Update();
 
             base.Update(gameTime);
         }
@@ -64,17 +51,9 @@ namespace MonoGolf
             GraphicsDevice.Clear(Color.Crimson);
 
             RasterizerState rasterizerState1 = new RasterizerState();
-            rasterizerState1.CullMode = CullMode.CullCounterClockwiseFace;
+            rasterizerState1.CullMode = CullMode.None;
+            //rasterizerState1.FillMode = FillMode.WireFrame;
             GraphicsDevice.RasterizerState = rasterizerState1;
-
-            foreach (BasicEffect effect in cubeMesh.Effects)
-            {
-                effect.EnableDefaultLighting();
-                effect.View = camera.ViewMatrix;
-                effect.Projection = camera.Projection;
-                effect.World = worldMatrix;
-            }
-            cubeMesh.Draw();
 
             base.Draw(gameTime);
         }

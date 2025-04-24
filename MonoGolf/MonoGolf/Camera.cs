@@ -14,9 +14,9 @@ namespace MonoGolf
         private const float sensitivity = 0.1f;
         private Vector3 target;
         private float zoom = 20f;
-        private const float minZoom = 5f;
+        private const float minZoom = 10f;
         private const float maxZoom = 50f;
-        private const float fov = MathHelper.PiOver4;
+        private const float fov = MathHelper.Pi * 0.4f;
 
         public Matrix ViewMatrix { get; private set; }
         public Matrix Projection { get; private set; }
@@ -27,7 +27,6 @@ namespace MonoGolf
             this.phi = MathHelper.Clamp(phi, minPhi, maxPhi);
             UpdateDir();
             this.target = target;
-            //ViewMatrix = 
             Projection = Matrix.CreatePerspectiveFieldOfView(fov, aspectRatio, 0.5f, 300f);
         }
 
