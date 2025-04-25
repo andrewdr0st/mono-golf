@@ -10,13 +10,19 @@ namespace MonoGolf
         Matrix worldMatrix;
 
         public Vector3 Pos { get; set; }
-        public Vector3 Scale {  get; set; }
+        public Vector3 Scale { get; set; }
+
+        public Vector3 DiffuseColor { get; set; }
+        public Vector3 SpecularColor { get; set; }
+
 
 
         public DrawableObject(Game game, Scene scene, ModelMesh mesh) : base(game)
         {
             this.scene = scene;
             this.mesh = mesh;
+            DiffuseColor = new Vector3(0.25f, 0.25f, 0.25f);
+            SpecularColor = new Vector3(0.25f, 0.25f, 0.25f);
             Pos = new Vector3(0, 0, 0);
             Scale = new Vector3(1, 1, 1);
             UpdateWorldMatrix();
@@ -26,6 +32,8 @@ namespace MonoGolf
         {
             this.scene = scene;
             this.mesh = mesh;
+            DiffuseColor = new Vector3(0.25f, 0.25f, 0.25f);
+            SpecularColor = new Vector3(0.25f, 0.25f, 0.25f);
             Pos = pos;
             Scale = scale;
             UpdateWorldMatrix();
@@ -36,6 +44,8 @@ namespace MonoGolf
             foreach (BasicEffect effect in mesh.Effects)
             {
                 effect.EnableDefaultLighting();
+                effect.DiffuseColor = DiffuseColor;
+                effect.SpecularColor = SpecularColor;
                 effect.View = scene.Camera.ViewMatrix;
                 effect.Projection = scene.Camera.Projection;
                 effect.World = worldMatrix;
@@ -45,7 +55,7 @@ namespace MonoGolf
             base.Draw(gameTime);
         }
 
-        private void UpdateWorldMatrix()
+        protected void UpdateWorldMatrix()
         {
             worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Pos);
         }

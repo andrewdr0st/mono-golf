@@ -22,6 +22,9 @@ namespace MonoGolf
 
         protected override void Initialize()
         {
+            _graphics.PreferredBackBufferWidth = 1280;
+            _graphics.PreferredBackBufferHeight = 720;
+            _graphics.ApplyChanges();
             MeshList = new List<ModelMesh>();
             base.Initialize();
         }
@@ -29,6 +32,7 @@ namespace MonoGolf
         protected override void LoadContent()
         {
             MeshList.Add(Content.Load<Model>("testcube").Meshes[0]);
+            MeshList.Add(Content.Load<Model>("ball").Meshes[0]);
 
             scene = new Hole1(this);
             base.LoadContent();
@@ -41,7 +45,7 @@ namespace MonoGolf
 
             InputManager.Update();
 
-            scene.Update();
+            scene.Update(gameTime);
 
             base.Update(gameTime);
         }

@@ -27,7 +27,7 @@ namespace MonoGolf
             this.phi = MathHelper.Clamp(phi, minPhi, maxPhi);
             UpdateDir();
             this.target = target;
-            Projection = Matrix.CreatePerspectiveFieldOfView(fov, aspectRatio, 0.5f, 300f);
+            Projection = Matrix.CreatePerspectiveFieldOfView(fov, aspectRatio, 0.5f, 200f);
         }
 
         public void UpdateViewMatrix()
