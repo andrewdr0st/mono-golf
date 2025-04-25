@@ -11,12 +11,12 @@ namespace MonoGolf
         public Entity Entity { get; set; }
 
 
-        public DrawablePhysicsObject(Game game, Scene scene, ModelMesh mesh, Entity entity) : base(game, scene, mesh)
+        public DrawablePhysicsObject(Game game, Scene scene, ModelMesh mesh, ObjectMaterial mat, Entity entity) : base(game, scene, mesh, mat)
         {
             Entity = entity;
         }
 
-        public DrawablePhysicsObject(Game game, Scene scene, ModelMesh mesh, Entity entity, Vector3 pos, Vector3 scale) : base(game, scene, mesh, pos, scale)
+        public DrawablePhysicsObject(Game game, Scene scene, ModelMesh mesh, ObjectMaterial mat, Entity entity, Vector3 pos, Vector3 scale) : base(game, scene, mesh, mat, pos, scale)
         {
             Entity = entity;
             Entity.Position = MathConverter.Convert(pos);
