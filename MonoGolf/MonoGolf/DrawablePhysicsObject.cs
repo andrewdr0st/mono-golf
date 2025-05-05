@@ -29,4 +29,21 @@ namespace MonoGolf
             base.Update(gameTime);
         }
     }
+
+    public class Ball : DrawablePhysicsObject
+    {
+        public BoundingSphere BoundingSphere { get; private set; }
+
+        public Ball(Game game, Scene scene, ModelMesh mesh, ObjectMaterial mat, Entity entity, Vector3 pos, float scale) : base(game, scene, mesh, mat, entity, pos, new Vector3(scale, scale, scale))
+        {
+            BoundingSphere = new BoundingSphere(pos, scale);
+        }
+
+        public override void Update(GameTime gameTime)
+        {
+            BoundingSphere = new BoundingSphere(Pos, BoundingSphere.Radius);
+            base.Update(gameTime);
+            
+        }
+    }
 }

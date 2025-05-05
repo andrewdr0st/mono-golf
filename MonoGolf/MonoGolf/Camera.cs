@@ -55,8 +55,8 @@ namespace MonoGolf
             Vector3 right = Vector3.Cross(dir, Vector3.Up);
             right.Normalize();
             Vector3 forward = Vector3.Cross(Vector3.Up, right);
-            Vector3 move = forward * -v.Y + right * v.X;
-            target += move * zoom * 0.05f;
+            Vector3 move = forward * -v.Y + right * -v.X;
+            target += move * zoom * 0.02f;
         }
 
         public void SetTarget(Vector3 t)

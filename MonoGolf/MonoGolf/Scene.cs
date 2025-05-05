@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
-using System;
+using System.Diagnostics;
 
 namespace MonoGolf
 {
@@ -11,7 +12,7 @@ namespace MonoGolf
     {
         private Game game;
         private Space space;
-
+        protected Ball activeBall;
         public Camera Camera { get; protected set; }
         
         protected Scene(Game game)
@@ -35,17 +36,39 @@ namespace MonoGolf
 
         public virtual void Update(GameTime gameTime)
         {
-            if (InputManager.RightPressed())
+            if (InputManager.LeftCLick())
+            {
+                if (BallRaycast())
+                {
+                    Debug.WriteLine("hit!");
+                }
+            }
+            else if (InputManager.RightPressed())
             {
                 Camera.Rotate(InputManager.GetMoveAmount());
             }
-            else if (InputManager.LeftPressed())
+            else if (InputManager.MiddlePressed())
             {
                 Camera.Pan(InputManager.GetMoveAmount());
             }
+            Camera.Pan(InputManager.MoveVector);
             Camera.Zoom(InputManager.GetScrollAmount());
             Camera.UpdateViewMatrix();
             space.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
+        }
+
+        private bool BallRaycast()
+        {
+            Vector3 near = new Vector3(InputManager.MouseCoords(), 0f);
+            Vector3 far = new Vector3(InputManager.MouseCoords(), 1f);
+            Matrix world = Matrix.CreateTranslation(new Vector3(0, 0, 0));
+            Vector3 nearPoint = game.GraphicsDevice.Viewport.Unproject(near, Camera.Projection, Camera.ViewMatrix, world);
+            Vector3 farPoint = game.GraphicsDevice.Viewport.Unproject(far, Camera.Projection, Camera.ViewMatrix, world);
+            Vector3 direction = farPoint - nearPoint;
+            direction.Normalize();
+            Ray ray = new Ray(nearPoint, direction);
+            float? distance = ray.Intersects(activeBall.BoundingSphere);
+            return distance.HasValue;
         }
 
     }
@@ -60,8 +83,9 @@ namespace MonoGolf
             AddGameComponent(platform);
             Entity b = new Sphere(new BEPUutilities.Vector3(0, 10, 0), 0.75f, 0.1f);
             b.Material.Bounciness = 0.9f;
-            DrawablePhysicsObject ball = new DrawablePhysicsObject(game, this, Minigolf.MeshList[1], new BallMaterial(), b, new Vector3(0, 10, 0), new Vector3(0.75f, 0.75f, 0.75f));
+            Ball ball = new Ball(game, this, Minigolf.MeshList[1], new BallMaterial(), b, new Vector3(0, 10, 0), 0.75f);
             AddGameComponent(ball);
+            activeBall = ball;
         }
     }
 }
