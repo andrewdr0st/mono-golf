@@ -32,9 +32,9 @@ namespace MonoGolf
             return mouseState.LeftButton == ButtonState.Pressed;
         }
 
-        public static bool LeftCLick()
+        public static bool LeftClicked()
         {
-            return mouseState.LeftButton != ButtonState.Pressed && prevState.LeftButton == ButtonState.Pressed;
+            return mouseState.LeftButton == ButtonState.Pressed && prevState.LeftButton != ButtonState.Pressed;
         }
 
         public static bool RightPressed()

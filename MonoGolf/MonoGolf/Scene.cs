@@ -5,6 +5,7 @@ using BEPUphysics;
 using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using System.Diagnostics;
+using ConversionHelper;
 
 namespace MonoGolf
 {
@@ -13,6 +14,7 @@ namespace MonoGolf
         private Game game;
         private Space space;
         protected Ball activeBall;
+        private bool dragging = false;
         public Camera Camera { get; protected set; }
         
         protected Scene(Game game)
@@ -36,28 +38,62 @@ namespace MonoGolf
 
         public virtual void Update(GameTime gameTime)
         {
-            if (InputManager.LeftCLick())
+            if (dragging)
             {
-                if (BallRaycast())
+                Vector3 mousePos = DragRaycast();
+                Vector3 launchVector = activeBall.Pos - mousePos;
+                if (!InputManager.LeftPressed())
                 {
-                    Debug.WriteLine("hit!");
+                    activeBall.Entity.ApplyImpulse(MathConverter.Convert(activeBall.Pos), MathConverter.Convert(launchVector));
+                    dragging = false;
                 }
             }
-            else if (InputManager.RightPressed())
+            else
             {
-                Camera.Rotate(InputManager.GetMoveAmount());
+                if (InputManager.LeftClicked())
+                {
+                    if (BallRaycast())
+                    {
+                        dragging = true;
+                    }
+                }
+                else if (InputManager.RightPressed())
+                {
+                    Camera.Rotate(InputManager.GetMoveAmount());
+                }
+                else if (InputManager.MiddlePressed())
+                {
+                    Camera.Pan(InputManager.GetMoveAmount());
+                }
+                Camera.Pan(InputManager.MoveVector);
+                Camera.Zoom(InputManager.GetScrollAmount());
             }
-            else if (InputManager.MiddlePressed())
-            {
-                Camera.Pan(InputManager.GetMoveAmount());
-            }
-            Camera.Pan(InputManager.MoveVector);
-            Camera.Zoom(InputManager.GetScrollAmount());
             Camera.UpdateViewMatrix();
             space.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
         }
 
         private bool BallRaycast()
+        { 
+            float? distance = MouseRay().Intersects(activeBall.BoundingSphere);
+            return distance.HasValue;
+        }
+
+        private Vector3 DragRaycast()
+        {
+            Plane p = new Plane(activeBall.Pos, Vector3.Up);
+            Ray mouseRay = MouseRay();
+            float? distance = mouseRay.Intersects(p);
+            if (distance.HasValue)
+            {
+                return mouseRay.Position + mouseRay.Direction * distance.Value;
+            }
+            else
+            {
+                return Vector3.Zero;
+            }
+        }
+
+        private Ray MouseRay()
         {
             Vector3 near = new Vector3(InputManager.MouseCoords(), 0f);
             Vector3 far = new Vector3(InputManager.MouseCoords(), 1f);
@@ -66,9 +102,7 @@ namespace MonoGolf
             Vector3 farPoint = game.GraphicsDevice.Viewport.Unproject(far, Camera.Projection, Camera.ViewMatrix, world);
             Vector3 direction = farPoint - nearPoint;
             direction.Normalize();
-            Ray ray = new Ray(nearPoint, direction);
-            float? distance = ray.Intersects(activeBall.BoundingSphere);
-            return distance.HasValue;
+            return new Ray(nearPoint, direction);
         }
 
     }
