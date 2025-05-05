@@ -7,7 +7,5 @@ namespace MonoGolf
     public interface IPhysicsComponent
     {
         public Entity Entity { get; set; }
-
-
     }
 }

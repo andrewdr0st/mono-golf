@@ -6,6 +6,11 @@ using BEPUphysics.Entities;
 using BEPUphysics.Entities.Prefabs;
 using System.Diagnostics;
 using ConversionHelper;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.NarrowPhaseSystems.Pairs;
+using BEPUphysics.Paths.PathFollowing;
+using System;
 
 namespace MonoGolf
 {
@@ -16,13 +21,29 @@ namespace MonoGolf
         protected Ball activeBall;
         private bool dragging = false;
         public Camera Camera { get; protected set; }
-        
+
         protected Scene(Game game)
         {
             this.game = game;
             space = new Space();
             space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -5f, 0);
             Camera = new Camera(0, MathHelper.Pi * 0.25f, Vector3.Zero, MathHelper.PiOver4);
+            Entity deathPlane = new Triangle(
+                new BEPUutilities.Vector3(-10000f, -10f, -10000f),
+                new BEPUutilities.Vector3(10000f, -10f, -10000f),
+                new BEPUutilities.Vector3(0f, -10f, 10000f)
+            );
+            deathPlane.CollisionInformation.Events.InitialCollisionDetected += (EntityCollidable sender, Collidable other, CollidablePairHandler pair) =>
+            {
+                if (other is EntityCollidable otherEntityCollidable)
+                {
+                    if (otherEntityCollidable.Entity.Tag is Ball ball)
+                    {
+                        ball.ResetPosition();
+                    }
+                }
+            };
+            space.Add(deathPlane);
         }
 
         protected void AddGameComponent(DrawableGameComponent c)

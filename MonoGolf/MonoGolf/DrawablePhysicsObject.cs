@@ -33,10 +33,13 @@ namespace MonoGolf
     public class Ball : DrawablePhysicsObject
     {
         public BoundingSphere BoundingSphere { get; private set; }
+        private BEPUutilities.Vector3 homePos;
 
         public Ball(Game game, Scene scene, ModelMesh mesh, ObjectMaterial mat, Entity entity, Vector3 pos, float scale) : base(game, scene, mesh, mat, entity, pos, new Vector3(scale, scale, scale))
         {
             BoundingSphere = new BoundingSphere(pos, scale);
+            entity.Tag = this;
+            homePos = MathConverter.Convert(pos);
         }
 
         public override void Update(GameTime gameTime)
@@ -44,6 +47,13 @@ namespace MonoGolf
             BoundingSphere = new BoundingSphere(Pos, BoundingSphere.Radius);
             base.Update(gameTime);
             
+        }
+
+        public void ResetPosition()
+        {
+            Entity.LinearVelocity = BEPUutilities.Vector3.Zero;
+            Entity.AngularVelocity = BEPUutilities.Vector3.Zero;
+            Entity.Position = homePos;
         }
     }
 }
