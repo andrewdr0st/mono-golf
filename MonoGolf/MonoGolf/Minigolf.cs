@@ -33,6 +33,7 @@ namespace MonoGolf
         {
             MeshList.Add(Content.Load<Model>("testcube").Meshes[0]);
             MeshList.Add(Content.Load<Model>("ball").Meshes[0]);
+            MeshList.Add(Content.Load<Model>("diamond").Meshes[0]);
 
             scene = new Hole1(this);
             base.LoadContent();

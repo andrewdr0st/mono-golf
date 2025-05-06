@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using BEPUphysics.Entities;
+using ConversionHelper;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGolf
@@ -65,6 +67,12 @@ namespace MonoGolf
             base.Draw(gameTime);
         }
 
+        public override void Update(GameTime gameTime)
+        {
+            UpdateWorldMatrix();
+            base.Update(gameTime);
+        }
+
         protected void UpdateWorldMatrix()
         {
             worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Pos);
@@ -96,6 +104,16 @@ namespace MonoGolf
             DiffuseColor = new Vector3(0.8f, 0.8f, 0.8f);
             SpecularColor = new Vector3(0.2f, 0.2f, 0.2f);
             AmbientColor = new Vector3(0.4f, 0.4f, 0.4f);
+        }
+    }
+
+    public class IndicatorMaterial : ObjectMaterial
+    {
+        public IndicatorMaterial()
+        {
+            DiffuseColor = new Vector3(0.5f, 0.5f, 1f);
+            SpecularColor = new Vector3(0f, 0f, 0f);
+            AmbientColor = new Vector3(0.5f, 0.5f, 1f);
         }
     }
 }

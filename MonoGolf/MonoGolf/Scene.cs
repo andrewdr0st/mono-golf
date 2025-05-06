@@ -19,7 +19,11 @@ namespace MonoGolf
         private Game game;
         private Space space;
         protected Ball activeBall;
+        private const float launchStrength = 0.4f;
+        private const float minStrength = 0.75f;
+        private const float maxStrength = 6f;
         private bool dragging = false;
+        private DrawableObject[] aimIndicators;
         public Camera Camera { get; protected set; }
 
         protected Scene(Game game)
@@ -44,6 +48,16 @@ namespace MonoGolf
                 }
             };
             space.Add(deathPlane);
+            aimIndicators = [
+                new DrawableObject(game, this, Minigolf.MeshList[2], new IndicatorMaterial(), Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f)),
+                new DrawableObject(game, this, Minigolf.MeshList[2], new IndicatorMaterial(), Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f)),
+                new DrawableObject(game, this, Minigolf.MeshList[2], new IndicatorMaterial(), Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f))
+            ];
+            foreach (DrawableObject a in aimIndicators)
+            {
+                a.Visible = false;
+                AddGameComponent(a);
+            }
         }
 
         protected void AddGameComponent(DrawableGameComponent c)
@@ -63,10 +77,23 @@ namespace MonoGolf
             {
                 Vector3 mousePos = DragRaycast();
                 Vector3 launchVector = activeBall.Pos - mousePos;
+                float length = launchVector.Length();
+                launchVector.Normalize();
+                float strength = Math.Clamp((length - minStrength) * launchStrength , 0f, maxStrength);
+                for (int i = 0; i < 3; i++)
+                {
+                    DrawableObject a = aimIndicators[i];
+                    a.Visible = strength > 0f;
+                    a.Pos = activeBall.Pos + launchVector * (minStrength + strength) * ((i + 1) * 0.33f);
+                }
                 if (!InputManager.LeftPressed())
                 {
-                    activeBall.Entity.ApplyImpulse(MathConverter.Convert(activeBall.Pos), MathConverter.Convert(launchVector));
+                    activeBall.Entity.ApplyImpulse(MathConverter.Convert(activeBall.Pos), MathConverter.Convert(launchVector * strength));
                     dragging = false;
+                    foreach (DrawableObject a in aimIndicators)
+                    {
+                        a.Visible = false;
+                    }
                 }
             }
             else

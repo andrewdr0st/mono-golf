@@ -25,7 +25,6 @@ namespace MonoGolf
         public override void Update(GameTime gameTime)
         {
             Pos = MathConverter.Convert(Entity.Position);
-            UpdateWorldMatrix();
             base.Update(gameTime);
         }
     }
