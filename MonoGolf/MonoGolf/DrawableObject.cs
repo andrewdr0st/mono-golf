@@ -9,13 +9,13 @@ namespace MonoGolf
     {
         Scene scene;
         ModelMesh mesh;
-        Matrix worldMatrix;
+        protected Matrix worldMatrix;
 
         public Vector3 Pos { get; set; }
         public Vector3 Scale { get; set; }
         public ObjectMaterial Material { get; set; }
 
-        public DrawableObject(Game game, Scene scene, ModelMesh mesh, ObjectMaterial mat) : base(game)
+        public DrawableObject(Scene scene, ModelMesh mesh, ObjectMaterial mat) : base(scene.Game)
         {
             this.scene = scene;
             this.mesh = mesh;
@@ -26,7 +26,7 @@ namespace MonoGolf
             SetupEffects();
         }
 
-        public DrawableObject(Game game, Scene scene, ModelMesh mesh, ObjectMaterial mat, Vector3 pos, Vector3 scale) : base(game)
+        public DrawableObject(Scene scene, ModelMesh mesh, ObjectMaterial mat, Vector3 pos, Vector3 scale) : base(scene.Game)
         {
             this.scene = scene;
             this.mesh = mesh;
@@ -48,9 +48,6 @@ namespace MonoGolf
                 effect.DirectionalLight0.Direction = Vector3.Normalize(new Vector3(-0.25f, -1f, -0.1f));
                 effect.DirectionalLight0.DiffuseColor = new Vector3(1.0f, 1.0f, 1.0f);
                 effect.DirectionalLight0.SpecularColor = new Vector3(0.5f, 0.5f, 0.5f);
-                effect.AmbientLightColor = Material.AmbientColor;
-                effect.DiffuseColor = Material.DiffuseColor;
-                effect.SpecularColor = Material.SpecularColor;
             }
         }
 
@@ -61,6 +58,9 @@ namespace MonoGolf
                 effect.View = scene.Camera.ViewMatrix;
                 effect.Projection = scene.Camera.Projection;
                 effect.World = worldMatrix;
+                effect.AmbientLightColor = Material.AmbientColor;
+                effect.DiffuseColor = Material.DiffuseColor;
+                effect.SpecularColor = Material.SpecularColor;
             }
             mesh.Draw();
 
@@ -73,7 +73,7 @@ namespace MonoGolf
             base.Update(gameTime);
         }
 
-        protected void UpdateWorldMatrix()
+        protected virtual void UpdateWorldMatrix()
         {
             worldMatrix = Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Pos);
         }
@@ -82,7 +82,7 @@ namespace MonoGolf
 
     public class ObjectMaterial
     {
-        public Vector3 DiffuseColor {  get; protected set; }
+        public Vector3 DiffuseColor { get; protected set; }
         public Vector3 SpecularColor { get; protected set; }
         public Vector3 AmbientColor { get; protected set; }
     }
@@ -91,9 +91,19 @@ namespace MonoGolf
     {
         public FloorMaterial()
         {
-            DiffuseColor = new Vector3(0.3f, 0.2f, 0.3f);
-            SpecularColor = new Vector3(0.7f, 0.8f, 0.9f);
-            AmbientColor = new Vector3(0.1f, 0.05f, 0.1f);
+            DiffuseColor = new Vector3(0.25f, 0.2f, 0.4f);
+            SpecularColor = new Vector3(0.5f, 0.4f, 0.5f);
+            AmbientColor = new Vector3(0.075f, 0.05f, 0.1f);
+        }
+    }
+
+    public class WallMaterial : ObjectMaterial
+    {
+        public WallMaterial()
+        {
+            DiffuseColor = new Vector3(0.4f, 0.3f, 0.75f);
+            SpecularColor = new Vector3(0.5f, 0.4f, 0.5f);
+            AmbientColor = new Vector3(0.2f, 0.1f, 0.2f);
         }
     }
 
@@ -101,9 +111,9 @@ namespace MonoGolf
     {
         public BallMaterial()
         {
-            DiffuseColor = new Vector3(0.8f, 0.8f, 0.8f);
+            DiffuseColor = new Vector3(0.75f, 0.75f, 0.75f);
             SpecularColor = new Vector3(0.2f, 0.2f, 0.2f);
-            AmbientColor = new Vector3(0.4f, 0.4f, 0.4f);
+            AmbientColor = new Vector3(0.5f, 0.5f, 0.5f);
         }
     }
 

@@ -16,7 +16,7 @@ namespace MonoGolf
 {
     public class Scene
     {
-        private Game game;
+        public Game Game { get; private set; }
         private Space space;
         protected Ball activeBall;
         private const float launchStrength = 0.4f;
@@ -28,7 +28,7 @@ namespace MonoGolf
 
         protected Scene(Game game)
         {
-            this.game = game;
+            Game = game;
             space = new Space();
             space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -5f, 0);
             Camera = new Camera(0, MathHelper.Pi * 0.25f, Vector3.Zero, MathHelper.PiOver4);
@@ -49,9 +49,9 @@ namespace MonoGolf
             };
             space.Add(deathPlane);
             aimIndicators = [
-                new DrawableObject(game, this, Minigolf.MeshList[2], new IndicatorMaterial(), Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f)),
-                new DrawableObject(game, this, Minigolf.MeshList[2], new IndicatorMaterial(), Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f)),
-                new DrawableObject(game, this, Minigolf.MeshList[2], new IndicatorMaterial(), Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f))
+                new DrawableObject(this, Minigolf.MeshList[2], new IndicatorMaterial(), Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f)),
+                new DrawableObject(this, Minigolf.MeshList[2], new IndicatorMaterial(), Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f)),
+                new DrawableObject(this, Minigolf.MeshList[2], new IndicatorMaterial(), Vector3.Zero, new Vector3(0.2f, 0.2f, 0.2f))
             ];
             foreach (DrawableObject a in aimIndicators)
             {
@@ -62,12 +62,12 @@ namespace MonoGolf
 
         protected void AddGameComponent(DrawableGameComponent c)
         {
-            game.Components.Add(c);
+            Game.Components.Add(c);
         }
 
         protected void AddGameComponent(DrawablePhysicsObject o)
         {
-            game.Components.Add(o);
+            Game.Components.Add(o);
             space.Add(o.Entity);
         }
 
@@ -89,6 +89,7 @@ namespace MonoGolf
                 if (!InputManager.LeftPressed())
                 {
                     activeBall.Entity.ApplyImpulse(MathConverter.Convert(activeBall.Pos), MathConverter.Convert(launchVector * strength));
+                    activeBall.BallActive = true;
                     dragging = false;
                     foreach (DrawableObject a in aimIndicators)
                     {
@@ -146,8 +147,8 @@ namespace MonoGolf
             Vector3 near = new Vector3(InputManager.MouseCoords(), 0f);
             Vector3 far = new Vector3(InputManager.MouseCoords(), 1f);
             Matrix world = Matrix.CreateTranslation(new Vector3(0, 0, 0));
-            Vector3 nearPoint = game.GraphicsDevice.Viewport.Unproject(near, Camera.Projection, Camera.ViewMatrix, world);
-            Vector3 farPoint = game.GraphicsDevice.Viewport.Unproject(far, Camera.Projection, Camera.ViewMatrix, world);
+            Vector3 nearPoint = Game.GraphicsDevice.Viewport.Unproject(near, Camera.Projection, Camera.ViewMatrix, world);
+            Vector3 farPoint = Game.GraphicsDevice.Viewport.Unproject(far, Camera.Projection, Camera.ViewMatrix, world);
             Vector3 direction = farPoint - nearPoint;
             direction.Normalize();
             return new Ray(nearPoint, direction);
@@ -159,13 +160,9 @@ namespace MonoGolf
     {
         public Hole1(Game game) : base(game)
         {
-            Entity e = new Box(new BEPUutilities.Vector3(0, 0, 0), 20, 2, 20);
-            e.Material.Bounciness = 0.4f;
-            DrawablePhysicsObject platform = new DrawablePhysicsObject(game, this, Minigolf.MeshList[0], new FloorMaterial(), e, Vector3.Zero, new Vector3(10, 1, 10));
-            AddGameComponent(platform);
-            Entity b = new Sphere(new BEPUutilities.Vector3(0, 10, 0), 0.75f, 0.1f);
-            b.Material.Bounciness = 0.9f;
-            Ball ball = new Ball(game, this, Minigolf.MeshList[1], new BallMaterial(), b, new Vector3(0, 10, 0), 0.75f);
+            AddGameComponent(new FloorBox(this, Vector3.Zero, new Vector3(10f, 1f, 10f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(0f, 1.5f, 10f), new Vector3(10f, 0.5f, 1f), 0));
+            Ball ball = new Ball(this, new Vector3(0, 10, 0));
             AddGameComponent(ball);
             activeBall = ball;
         }
