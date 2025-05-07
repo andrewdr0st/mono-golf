@@ -89,8 +89,8 @@ namespace MonoGolf
     {
         public FloorMaterial()
         {
-            DiffuseColor = new Vector3(0.25f, 0.2f, 0.4f);
-            SpecularColor = new Vector3(0.5f, 0.4f, 0.5f);
+            DiffuseColor = new Vector3(0.25f, 0.2f, 0.35f);
+            SpecularColor = new Vector3(0.35f, 0.35f, 0.35f);
             AmbientColor = new Vector3(0.1f, 0.1f, 0.2f);
         }
     }

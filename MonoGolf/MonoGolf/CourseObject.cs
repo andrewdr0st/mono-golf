@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using BEPUphysics.Entities.Prefabs;
 using ConversionHelper;
+using BEPUphysics.CollisionShapes;
+using BEPUphysics.CollisionShapes.ConvexShapes;
 
 namespace MonoGolf
 {
@@ -49,6 +51,17 @@ namespace MonoGolf
             }
             return new ConvexHull(MathConverter.Convert(pos), verts);
         }
+
+        public static Entity MakeHole(Vector3 pos)
+        {
+            List<CompoundShapeEntry> entries = [];
+            entries.Add(new CompoundShapeEntry(new BoxShape(4, 2, 10), MathConverter.Convert(pos + new Vector3(-3, 0, 0))));
+            entries.Add(new CompoundShapeEntry(new BoxShape(4, 2, 10), MathConverter.Convert(pos + new Vector3(3, 0, 0))));
+            entries.Add(new CompoundShapeEntry(new BoxShape(2, 2, 4), MathConverter.Convert(pos + new Vector3(0, 0, -3))));
+            entries.Add(new CompoundShapeEntry(new BoxShape(2, 2, 4), MathConverter.Convert(pos + new Vector3(0, 0, 3))));
+            entries.Add(new CompoundShapeEntry(new BoxShape(2, 1, 2), MathConverter.Convert(pos + new Vector3(0, -0.5f, 0))));
+            return new CompoundBody(entries);
+        }
     }
 
     public class FloorBox(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[0], new FloorMaterial(), MakeBox(pos, scale), pos, scale, r)
@@ -60,6 +73,10 @@ namespace MonoGolf
     }
 
     public class FloorSlope(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[3], new FloorMaterial(), MakeSlope(pos, scale), pos, scale, r)
+    {
+    }
+
+    public class HoleBox(Scene scene, Vector3 pos, float r) : CourseObject(scene, Minigolf.MeshList[4], new FloorMaterial(), MakeHole(pos), pos, new Vector3(5f, 1f, 5f), r)
     {
     }
 
