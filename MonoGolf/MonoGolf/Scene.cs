@@ -162,6 +162,7 @@ namespace MonoGolf
         {
             AddGameComponent(new FloorBox(this, Vector3.Zero, new Vector3(10f, 1f, 10f), 0));
             AddGameComponent(new WallBox(this, new Vector3(0f, 1.5f, 10f), new Vector3(10f, 0.5f, 1f), 0));
+            AddGameComponent(new FloorSlope(this, new Vector3(0f, 1f, -12f), new Vector3(10f, 2f, 2f), 180));
             Ball ball = new Ball(this, new Vector3(0, 10, 0));
             AddGameComponent(ball);
             activeBall = ball;

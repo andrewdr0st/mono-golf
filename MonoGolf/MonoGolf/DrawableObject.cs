@@ -1,6 +1,4 @@
-﻿using BEPUphysics.Entities;
-using ConversionHelper;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoGolf
@@ -93,7 +91,7 @@ namespace MonoGolf
         {
             DiffuseColor = new Vector3(0.25f, 0.2f, 0.4f);
             SpecularColor = new Vector3(0.5f, 0.4f, 0.5f);
-            AmbientColor = new Vector3(0.075f, 0.05f, 0.1f);
+            AmbientColor = new Vector3(0.1f, 0.1f, 0.2f);
         }
     }
 
@@ -101,9 +99,9 @@ namespace MonoGolf
     {
         public WallMaterial()
         {
-            DiffuseColor = new Vector3(0.4f, 0.3f, 0.75f);
+            DiffuseColor = new Vector3(0.4f, 0.35f, 0.75f);
             SpecularColor = new Vector3(0.5f, 0.4f, 0.5f);
-            AmbientColor = new Vector3(0.2f, 0.1f, 0.2f);
+            AmbientColor = new Vector3(0.2f, 0.2f, 0.3f);
         }
     }
 
