@@ -41,8 +41,8 @@ namespace MonoGolf
         {
             BoundingSphere = new BoundingSphere(pos, ballScale);
             Entity.Tag = this;
-            Entity.AngularDamping = 0.5f;
-            Entity.LinearDamping = 0.15f;
+            Entity.AngularDamping = 0.3f;
+            Entity.LinearDamping = 0.1f;
             Entity.Material.Bounciness = 0.9f;
             homePos = MathConverter.Convert(pos);
             BallActive = false;

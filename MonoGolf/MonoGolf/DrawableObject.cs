@@ -89,9 +89,9 @@ namespace MonoGolf
     {
         public FloorMaterial()
         {
-            DiffuseColor = new Vector3(0.25f, 0.2f, 0.35f);
-            SpecularColor = new Vector3(0.35f, 0.35f, 0.35f);
-            AmbientColor = new Vector3(0.1f, 0.1f, 0.2f);
+            DiffuseColor = new Vector3(0.2f, 0.2f, 0.25f);
+            SpecularColor = new Vector3(0.2f, 0.2f, 0.2f);
+            AmbientColor = new Vector3(0.1f, 0.1f, 0.1f);
         }
     }
 
@@ -99,9 +99,9 @@ namespace MonoGolf
     {
         public WallMaterial()
         {
-            DiffuseColor = new Vector3(0.4f, 0.35f, 0.75f);
-            SpecularColor = new Vector3(0.5f, 0.4f, 0.5f);
-            AmbientColor = new Vector3(0.2f, 0.2f, 0.3f);
+            DiffuseColor = new Vector3(0.25f, 0.25f, 0.6f);
+            SpecularColor = new Vector3(0.35f, 0.35f, 0.35f);
+            AmbientColor = new Vector3(0.1f, 0.1f, 0.25f);
         }
     }
 
@@ -122,6 +122,16 @@ namespace MonoGolf
             DiffuseColor = new Vector3(0.5f, 0.5f, 1f);
             SpecularColor = new Vector3(0f, 0f, 0f);
             AmbientColor = new Vector3(0.5f, 0.5f, 1f);
+        }
+    }
+
+    public class TeeMaterial : ObjectMaterial
+    {
+        public TeeMaterial()
+        {
+            DiffuseColor = new Vector3(0.05f, 0.05f, 0.05f);
+            SpecularColor = new Vector3(0.2f, 0.2f, 0.2f);
+            AmbientColor = new Vector3(0.05f, 0.05f, 0.05f);
         }
     }
 }

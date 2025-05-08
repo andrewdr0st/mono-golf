@@ -19,9 +19,9 @@ namespace MonoGolf
         public Game Game { get; private set; }
         private Space space;
         protected Ball activeBall;
-        private const float launchStrength = 0.4f;
+        private const float launchStrength = 0.6f;
         private const float minStrength = 0.75f;
-        private const float maxStrength = 6f;
+        private const float maxStrength = 8f;
         private bool dragging = false;
         private DrawableObject[] aimIndicators;
         public Camera Camera { get; protected set; }
@@ -160,13 +160,22 @@ namespace MonoGolf
     {
         public Hole1(Game game) : base(game)
         {
-            AddGameComponent(new FloorBox(this, Vector3.Zero, new Vector3(10f, 1f, 10f), 0));
-            AddGameComponent(new WallBox(this, new Vector3(0f, 1.5f, 10f), new Vector3(10f, 0.5f, 1f), 0));
-            AddGameComponent(new FloorSlope(this, new Vector3(0f, 1f, -12f), new Vector3(10f, 2f, 2f), 180));
-            AddGameComponent(new HoleBox(this, new Vector3(0f, 1f, -25f), 0));
-            Ball ball = new Ball(this, new Vector3(0, 10, 0));
+            Ball ball = new Ball(this, new Vector3(-7f, 2f, 0));
             AddGameComponent(ball);
             activeBall = ball;
+            AddGameComponent(new Tee(this, new Vector3(-7f, 1.1f, 0), 0));
+            AddGameComponent(new FloorBox(this, Vector3.Zero, new Vector3(12f, 1f, 8f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(6f, 0.5f, 9f), new Vector3(18f, 1.5f, 1f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(-13f, 0.5f, 1f), new Vector3(1f, 1.5f, 9f), 0));
+            AddGameComponent(new FloorSlope(this, new Vector3(0f, 1f, -10f), new Vector3(12f, 2f, 2f), 180));
+            AddGameComponent(new WallSlope(this, new Vector3(-13f, 2f, -10f), new Vector3(1f, 3f, 2f), 180));
+            AddGameComponent(new FloorBox(this, new Vector3(18f, 0f, -17f), new Vector3(6f, 1f, 25f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(25f, 0.5f, -17f), new Vector3(1f, 1.5f, 27f), 0));
+            AddGameComponent(new FloorBox(this, new Vector3(10f, 0f, -37f), new Vector3(2f, 1f, 5f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(11f, 0.5f, -43f), new Vector3(13f, 1.5f, 1f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(-3f, 0.5f, -37f), new Vector3(1f, 1.5f, 7f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(5f, 0.5f, -31f), new Vector3(7f, 1.5f, 1f), 0));
+            AddGameComponent(new HoleBox(this, new Vector3(3f, 0f, -37f), 0));
         }
     }
 }

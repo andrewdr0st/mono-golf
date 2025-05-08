@@ -19,7 +19,7 @@ namespace MonoGolf
         {
             r = MathHelper.ToRadians(r);
             Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Up, r);
-            Entity.Material.Bounciness = 0.4f;
+            Entity.Material.Bounciness = 0.6f;
             Matrix rotate = Matrix.CreateFromAxisAngle(Vector3.Up, r);
             worldMatrix = rotate * Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Pos);
         }
@@ -76,7 +76,15 @@ namespace MonoGolf
     {
     }
 
+    public class WallSlope(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[3], new WallMaterial(), MakeSlope(pos, scale), pos, scale, r)
+    {
+    }
+
     public class HoleBox(Scene scene, Vector3 pos, float r) : CourseObject(scene, Minigolf.MeshList[4], new FloorMaterial(), MakeHole(pos), pos, new Vector3(5f, 1f, 5f), r)
+    {
+    }
+
+    public class Tee(Scene scene, Vector3 pos, float r) : CourseObject(scene, Minigolf.MeshList[0], new TeeMaterial(), MakeBox(pos, new Vector3(2f, 0.1f, 2f)), pos, new Vector3(2f, 0.1f, 2f), r)
     {
     }
 
