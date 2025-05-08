@@ -30,6 +30,7 @@ namespace MonoGolf
         public Camera Camera { get; protected set; }
         public int StrokeCount { get; protected set; }
         private int strokeInc = 1;
+        private float jingleCooldown = 0;
 
         protected Scene(Minigolf game)
         {
@@ -112,7 +113,9 @@ namespace MonoGolf
                  Camera.Zoom(InputManager.GetScrollAmount());
             }
             Camera.UpdateViewMatrix();
-            space.Update((float) gameTime.ElapsedGameTime.TotalSeconds);
+            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            jingleCooldown -= deltaTime;
+            space.Update(deltaTime);
         }
 
         private bool BallRaycast()
@@ -169,6 +172,7 @@ namespace MonoGolf
                 if (strength > 0f)
                 {
                     followingBall = true;
+                    Minigolf.SoundEffects[0].Play();
                 }
                 foreach (DrawableObject a in aimIndicators)
                 {
@@ -179,6 +183,10 @@ namespace MonoGolf
 
         public void InHole(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
         {
+            if (jingleCooldown < 0f) {
+                Minigolf.SoundEffects[2].Play();
+                jingleCooldown = 1f;
+            }
             strokeInc = 0;
             Game.HoleFinished();
         }
@@ -206,9 +214,9 @@ namespace MonoGolf
             AddGameComponent(new WallBox(this, new Vector3(5f, 0.5f, -31f), new Vector3(7f, 1.5f, 1f), 0));
             AddGameComponent(new HoleBox(this, new Vector3(3f, 0f, -37f), 0));
             winPlane = new Triangle(
-                new BEPUutilities.Vector3(5f, 0.1f, -39f),
-                new BEPUutilities.Vector3(5f, 0.1f, -35f),
-                new BEPUutilities.Vector3(1f, 0.1f, -37f)
+                new BEPUutilities.Vector3(5f, 0.3f, -39f),
+                new BEPUutilities.Vector3(5f, 0.3f, -35f),
+                new BEPUutilities.Vector3(1f, 0.3f, -37f)
             );
             winPlane.CollisionInformation.Events.InitialCollisionDetected += InHole;
             space.Add(winPlane);
@@ -248,9 +256,9 @@ namespace MonoGolf
             AddGameComponent(new WallBox(this, new Vector3(6f, -2f, -22f), new Vector3(1f, 2f, 4f), 0));
             AddGameComponent(new WallBox(this, new Vector3(12f, -2f, -27f), new Vector3(7f, 2f, 1f), 0));
             winPlane = new Triangle(
-                new BEPUutilities.Vector3(10f, -2.9f, -20f),
-                new BEPUutilities.Vector3(14f, -2.9f, -20f),
-                new BEPUutilities.Vector3(12f, -2.9f, -23f)
+                new BEPUutilities.Vector3(10f, -2.7f, -20f),
+                new BEPUutilities.Vector3(14f, -2.7f, -20f),
+                new BEPUutilities.Vector3(12f, -2.7f, -23f)
             );
             winPlane.CollisionInformation.Events.InitialCollisionDetected += InHole;
             space.Add(winPlane);

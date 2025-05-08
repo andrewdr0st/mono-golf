@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -16,6 +17,7 @@ namespace MonoGolf
         private int currentScene = 0;
         private float transitionTimer = 2f;
         private bool transitioning = false;
+        public static List<SoundEffect> SoundEffects { get; private set; }
 
         public Minigolf()
         {
@@ -30,7 +32,8 @@ namespace MonoGolf
             graphics.PreferredBackBufferHeight = 720;
             graphics.ApplyChanges();
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            MeshList = new List<ModelMesh>();
+            MeshList = [];
+            SoundEffects = [];
             base.Initialize();
         }
 
@@ -41,8 +44,13 @@ namespace MonoGolf
             MeshList.Add(Content.Load<Model>("diamond").Meshes[0]);
             MeshList.Add(Content.Load<Model>("slope").Meshes[0]);
             MeshList.Add(Content.Load<Model>("hole").Meshes[0]);
+            MeshList.Add(Content.Load<Model>("slope2").Meshes[0]);
 
             font = Content.Load<SpriteFont>("font");
+
+            SoundEffects.Add(Content.Load<SoundEffect>("Launch"));
+            SoundEffects.Add(Content.Load<SoundEffect>("wall-hit"));
+            SoundEffects.Add(Content.Load<SoundEffect>("yay"));
 
             Scene = new Hole1(this);
 

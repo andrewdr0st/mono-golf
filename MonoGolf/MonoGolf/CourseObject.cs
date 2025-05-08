@@ -10,18 +10,31 @@ using BEPUphysics.Entities.Prefabs;
 using ConversionHelper;
 using BEPUphysics.CollisionShapes;
 using BEPUphysics.CollisionShapes.ConvexShapes;
+using BEPUphysics.BroadPhaseEntries.MobileCollidables;
+using BEPUphysics.BroadPhaseEntries;
+using BEPUphysics.NarrowPhaseSystems.Pairs;
 
 namespace MonoGolf
 {
     public class CourseObject : DrawablePhysicsObject
     {
-        public CourseObject(Scene scene, ModelMesh mesh, ObjectMaterial mat, Entity entity, Vector3 pos, Vector3 scale, float r) : base(scene, mesh, mat, entity, pos, scale)
+        public CourseObject(Scene scene, ModelMesh mesh, ObjectMaterial mat, Entity entity, Vector3 pos, Vector3 scale, float r, bool isWall) : base(scene, mesh, mat, entity, pos, scale)
         {
             r = MathHelper.ToRadians(r);
             Entity.Orientation = BEPUutilities.Quaternion.CreateFromAxisAngle(BEPUutilities.Vector3.Up, r);
-            Entity.Material.Bounciness = 0.6f;
+            Entity.Material.Bounciness = isWall ? 0.75f : 0.5f;
             Matrix rotate = Matrix.CreateFromAxisAngle(Vector3.Up, r);
             worldMatrix = rotate * Matrix.CreateScale(Scale) * Matrix.CreateTranslation(Pos);
+            if (isWall) {
+                Entity.CollisionInformation.Events.InitialCollisionDetected += (EntityCollidable sender, Collidable other, CollidablePairHandler pair) =>
+                {
+                    if (other is EntityCollidable otherEntityCollidable) {
+                        if (otherEntityCollidable.Entity.Tag is Ball ball) {
+                            Minigolf.SoundEffects[1].Play();
+                        }
+                    }
+                };
+            }
         }
 
         protected override void UpdateWorldMatrix()
@@ -64,27 +77,27 @@ namespace MonoGolf
         }
     }
 
-    public class FloorBox(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[0], new FloorMaterial(), MakeBox(pos, scale), pos, scale, r)
+    public class FloorBox(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[0], new FloorMaterial(), MakeBox(pos, scale), pos, scale, r, false)
     {
     }
 
-    public class WallBox(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[0], new WallMaterial(), MakeBox(pos, scale), pos, scale, r)
+    public class WallBox(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[0], new WallMaterial(), MakeBox(pos, scale), pos, scale, r, true)
     {
     }
 
-    public class FloorSlope(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[3], new FloorMaterial(), MakeSlope(pos, scale), pos, scale, r)
+    public class FloorSlope(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[3], new FloorMaterial(), MakeSlope(pos, scale), pos, scale, r, false)
     {
     }
 
-    public class WallSlope(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[3], new WallMaterial(), MakeSlope(pos, scale), pos, scale, r)
+    public class WallSlope(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[3], new WallMaterial(), MakeSlope(pos, scale), pos, scale, r, true)
     {
     }
 
-    public class HoleBox(Scene scene, Vector3 pos, float r) : CourseObject(scene, Minigolf.MeshList[4], new FloorMaterial(), MakeHole(pos), pos, new Vector3(5f, 1f, 5f), r)
+    public class HoleBox(Scene scene, Vector3 pos, float r) : CourseObject(scene, Minigolf.MeshList[4], new FloorMaterial(), MakeHole(pos), pos, new Vector3(5f, 1f, 5f), r, false)
     {
     }
 
-    public class Tee(Scene scene, Vector3 pos, float r) : CourseObject(scene, Minigolf.MeshList[0], new TeeMaterial(), MakeBox(pos, new Vector3(2f, 0.1f, 2f)), pos, new Vector3(2f, 0.1f, 2f), r)
+    public class Tee(Scene scene, Vector3 pos, float r) : CourseObject(scene, Minigolf.MeshList[0], new TeeMaterial(), MakeBox(pos, new Vector3(2f, 0.1f, 2f)), pos, new Vector3(2f, 0.1f, 2f), r, false)
     {
     }
 
