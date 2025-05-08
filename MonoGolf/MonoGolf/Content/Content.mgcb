@@ -51,6 +51,13 @@
 /processorParam:TextureFormat=Compressed
 /build:diamond.fbx
 
+#begin File.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:File.spritefont;font.spritefont
+
 #begin hole.fbx
 /importer:FbxImporter
 /processor:ModelProcessor

@@ -28,6 +28,8 @@ namespace MonoGolf
         private bool dragging = false;
         private DrawableObject[] aimIndicators;
         public Camera Camera { get; protected set; }
+        public int StrokeCount { get; protected set; }
+        private int strokeInc = 1;
 
         protected Scene(Minigolf game)
         {
@@ -35,6 +37,7 @@ namespace MonoGolf
             space = new Space();
             space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -7f, 0);
             Camera = new Camera(0, MathHelper.Pi * 0.25f, Vector3.Zero, MathHelper.PiOver4);
+            StrokeCount = 1;
             Entity deathPlane = new Triangle(
                 new BEPUutilities.Vector3(-10000f, -10f, -10000f),
                 new BEPUutilities.Vector3(10000f, -10f, -10000f),
@@ -98,6 +101,7 @@ namespace MonoGolf
                     Camera.SetTarget(activeBall.Pos);
                     if (!activeBall.BallActive)
                     {
+                        StrokeCount += strokeInc;
                         followingBall = false;
                     }
                 }
@@ -162,7 +166,10 @@ namespace MonoGolf
                 activeBall.Entity.ApplyImpulse(MathConverter.Convert(activeBall.Pos), MathConverter.Convert(launchVector * strength));
                 activeBall.BallActive = true;
                 dragging = false;
-                followingBall = true;
+                if (strength > 0f)
+                {
+                    followingBall = true;
+                }
                 foreach (DrawableObject a in aimIndicators)
                 {
                     a.Visible = false;
@@ -172,6 +179,7 @@ namespace MonoGolf
 
         public void InHole(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
         {
+            strokeInc = 0;
             Game.HoleFinished();
         }
     }

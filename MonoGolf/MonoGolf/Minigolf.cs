@@ -8,7 +8,9 @@ namespace MonoGolf
 {
     public class Minigolf : Game
     {
-        private GraphicsDeviceManager _graphics;
+        private GraphicsDeviceManager graphics;
+        private SpriteBatch spriteBatch;
+        private SpriteFont font;
         public Scene Scene { get; set; }
         public static List<ModelMesh> MeshList { get; private set; }
         private int currentScene = 0;
@@ -17,16 +19,17 @@ namespace MonoGolf
 
         public Minigolf()
         {
-            _graphics = new GraphicsDeviceManager(this);
+            graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
-            _graphics.PreferredBackBufferWidth = 1280;
-            _graphics.PreferredBackBufferHeight = 720;
-            _graphics.ApplyChanges();
+            graphics.PreferredBackBufferWidth = 1280;
+            graphics.PreferredBackBufferHeight = 720;
+            graphics.ApplyChanges();
+            spriteBatch = new SpriteBatch(GraphicsDevice);
             MeshList = new List<ModelMesh>();
             base.Initialize();
         }
@@ -38,6 +41,8 @@ namespace MonoGolf
             MeshList.Add(Content.Load<Model>("diamond").Meshes[0]);
             MeshList.Add(Content.Load<Model>("slope").Meshes[0]);
             MeshList.Add(Content.Load<Model>("hole").Meshes[0]);
+
+            font = Content.Load<SpriteFont>("font");
 
             Scene = new Hole1(this);
 
@@ -73,10 +78,14 @@ namespace MonoGolf
 
             RasterizerState rasterizerState1 = new RasterizerState();
             rasterizerState1.CullMode = CullMode.None;
-            //rasterizerState1.FillMode = FillMode.WireFrame;
+            GraphicsDevice.DepthStencilState = DepthStencilState.Default;
             GraphicsDevice.RasterizerState = rasterizerState1;
 
             base.Draw(gameTime);
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString(font, "Stroke " + Scene.StrokeCount, new Vector2(10, 10), Color.White);
+            spriteBatch.End();
         }
 
         public void NextScene()
