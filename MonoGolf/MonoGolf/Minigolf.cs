@@ -9,9 +9,11 @@ namespace MonoGolf
     public class Minigolf : Game
     {
         private GraphicsDeviceManager _graphics;
-        private Scene scene;
-
+        public Scene Scene { get; set; }
         public static List<ModelMesh> MeshList { get; private set; }
+        private int currentScene = 0;
+        private float transitionTimer = 2f;
+        private bool transitioning = false;
 
         public Minigolf()
         {
@@ -37,7 +39,8 @@ namespace MonoGolf
             MeshList.Add(Content.Load<Model>("slope").Meshes[0]);
             MeshList.Add(Content.Load<Model>("hole").Meshes[0]);
 
-            scene = new Hole1(this);
+            Scene = new Hole1(this);
+
             base.LoadContent();
         }
 
@@ -46,9 +49,20 @@ namespace MonoGolf
             if (Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            if (transitioning)
+            {
+                transitionTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+                if (transitionTimer < 0)
+                {
+                    transitioning = false;
+                    transitionTimer = 2f;
+                    NextScene();
+                }
+            }
+
             InputManager.Update();
 
-            scene.Update(gameTime);
+            Scene.Update(gameTime);
 
             base.Update(gameTime);
         }
@@ -63,6 +77,24 @@ namespace MonoGolf
             GraphicsDevice.RasterizerState = rasterizerState1;
 
             base.Draw(gameTime);
+        }
+
+        public void NextScene()
+        {
+            Components.Clear();
+            currentScene = (currentScene + 1) % 2;
+            if (currentScene == 0)
+            {
+                Scene = new Hole1(this);
+            } else if (currentScene == 1)
+            {
+                Scene = new Hole2(this);
+            }
+        }
+
+        public void HoleFinished()
+        {
+            transitioning = true;
         }
     }
 }

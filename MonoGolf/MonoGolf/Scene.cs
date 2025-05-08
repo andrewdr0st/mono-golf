@@ -16,9 +16,11 @@ namespace MonoGolf
 {
     public class Scene
     {
-        public Game Game { get; private set; }
-        private Space space;
+        public Minigolf Game { get; private set; }
+        protected Space space;
         protected Ball activeBall;
+        protected Entity winPlane;
+        protected Scene nextScene;
         private const float launchStrength = 0.6f;
         private const float minStrength = 0.75f;
         private const float maxStrength = 8f;
@@ -27,11 +29,11 @@ namespace MonoGolf
         private DrawableObject[] aimIndicators;
         public Camera Camera { get; protected set; }
 
-        protected Scene(Game game)
+        protected Scene(Minigolf game)
         {
             Game = game;
             space = new Space();
-            space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -6f, 0);
+            space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -7f, 0);
             Camera = new Camera(0, MathHelper.Pi * 0.25f, Vector3.Zero, MathHelper.PiOver4);
             Entity deathPlane = new Triangle(
                 new BEPUutilities.Vector3(-10000f, -10f, -10000f),
@@ -168,15 +170,20 @@ namespace MonoGolf
             }
         }
 
+        public void InHole(EntityCollidable sender, Collidable other, CollidablePairHandler pair)
+        {
+            Game.HoleFinished();
+        }
     }
 
     public class Hole1 : Scene
     {
-        public Hole1(Game game) : base(game)
+        public Hole1(Minigolf game) : base(game)
         {
             Ball ball = new Ball(this, new Vector3(-7f, 2f, 0));
             AddGameComponent(ball);
             activeBall = ball;
+            Camera = new Camera(MathHelper.Pi * -0.1f, MathHelper.Pi * 0.25f, activeBall.Pos, MathHelper.PiOver4);
             AddGameComponent(new Tee(this, new Vector3(-7f, 1.1f, 0), 0));
             AddGameComponent(new FloorBox(this, Vector3.Zero, new Vector3(12f, 1f, 8f), 0));
             AddGameComponent(new WallBox(this, new Vector3(6f, 0.5f, 9f), new Vector3(18f, 1.5f, 1f), 0));
@@ -190,6 +197,55 @@ namespace MonoGolf
             AddGameComponent(new WallBox(this, new Vector3(-3f, 0.5f, -37f), new Vector3(1f, 1.5f, 7f), 0));
             AddGameComponent(new WallBox(this, new Vector3(5f, 0.5f, -31f), new Vector3(7f, 1.5f, 1f), 0));
             AddGameComponent(new HoleBox(this, new Vector3(3f, 0f, -37f), 0));
+            winPlane = new Triangle(
+                new BEPUutilities.Vector3(5f, 0.1f, -39f),
+                new BEPUutilities.Vector3(5f, 0.1f, -35f),
+                new BEPUutilities.Vector3(1f, 0.1f, -37f)
+            );
+            winPlane.CollisionInformation.Events.InitialCollisionDetected += InHole;
+            space.Add(winPlane);
+        }
+    }
+
+    public class Hole2 : Scene
+    {
+        public Hole2(Minigolf game) : base(game)
+        {
+            Ball ball = new Ball(this, new Vector3(-17f, 7f, -11f));
+            AddGameComponent(ball);
+            activeBall = ball;
+            Camera = new Camera(MathHelper.Pi * -0.5f, MathHelper.Pi * 0.25f, activeBall.Pos, MathHelper.PiOver4);
+            AddGameComponent(new Tee(this, new Vector3(-17f, 6.1f, -11f), 0));
+            AddGameComponent(new FloorBox(this, new Vector3(-7.5f, 5f, -11f), new Vector3(12.5f, 1f, 5f), 0));
+            AddGameComponent(new FloorSlope(this, new Vector3(0f, 4f, -4.5f), new Vector3(5f, 2f, 1.5f), 180));
+            AddGameComponent(new FloorSlope(this, new Vector3(0f, 3f, -3f), new Vector3(5f, 2f, 1.5f), 180));
+            AddGameComponent(new FloorSlope(this, new Vector3(0f, 2f, -1.5f), new Vector3(5f, 2f, 1.5f), 180));
+            AddGameComponent(new FloorSlope(this, new Vector3(0f, 1f, 0f), new Vector3(5f, 2f, 1.5f), 180));
+            AddGameComponent(new FloorSlope(this, new Vector3(0f, 0f, 1.5f), new Vector3(5f, 2f, 1.5f), 180));
+            AddGameComponent(new FloorSlope(this, new Vector3(0f, -1f, 3f), new Vector3(5f, 2f, 1.5f), 180));
+            AddGameComponent(new FloorSlope(this, new Vector3(0f, -2f, 4.5f), new Vector3(5f, 2f, 1.5f), 180));
+            AddGameComponent(new FloorBox(this, new Vector3(6f, -3f, 11f), new Vector3(11f, 1f, 5f), 0));
+            AddGameComponent(new FloorBox(this, new Vector3(12f, -3f, -5f), new Vector3(5f, 1f, 11f), 0));
+            AddGameComponent(new HoleBox(this, new Vector3(12f, -3f, -21f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(0f, 7f, -11f), new Vector3(1.5f, 2f, 1.5f), 45));
+            AddGameComponent(new WallBox(this, new Vector3(0f, -2f, 11f), new Vector3(1.5f, 2f, 1.5f), 45));
+            AddGameComponent(new WallBox(this, new Vector3(-6f, 1f, 6f), new Vector3(1f, 5f, 12f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(6f, 1f, -5f), new Vector3(1f, 5f, 11f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(-7.5f, 2f, -17f), new Vector3(14.5f, 6f, 1f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(-21f, 2f, -10f), new Vector3(1f, 6f, 6f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(-13.5f, 1f, -5f), new Vector3(6.5f, 5f, 1f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(6f, -2f, 17f), new Vector3(11f, 2f, 1f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(18f, -2f, 6f), new Vector3(1f, 2f, 12f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(18f, -2f, -21f), new Vector3(1f, 2f, 5f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(6f, -2f, -22f), new Vector3(1f, 2f, 4f), 0));
+            AddGameComponent(new WallBox(this, new Vector3(12f, -2f, -27f), new Vector3(7f, 2f, 1f), 0));
+            winPlane = new Triangle(
+                new BEPUutilities.Vector3(10f, -2.9f, -20f),
+                new BEPUutilities.Vector3(14f, -2.9f, -20f),
+                new BEPUutilities.Vector3(12f, -2.9f, -23f)
+            );
+            winPlane.CollisionInformation.Events.InitialCollisionDetected += InHole;
+            space.Add(winPlane);
         }
     }
 }
