@@ -55,7 +55,7 @@ namespace MonoGolf
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.Crimson);
+            GraphicsDevice.Clear(Color.Black);
 
             RasterizerState rasterizerState1 = new RasterizerState();
             rasterizerState1.CullMode = CullMode.None;
