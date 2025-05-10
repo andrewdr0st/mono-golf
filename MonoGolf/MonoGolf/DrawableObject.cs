@@ -119,9 +119,9 @@ namespace MonoGolf
     {
         public IndicatorMaterial()
         {
-            DiffuseColor = new Vector3(0.5f, 0.5f, 1f);
+            DiffuseColor = new Vector3(0.2f, 0.5f, 1f);
             SpecularColor = new Vector3(0f, 0f, 0f);
-            AmbientColor = new Vector3(0.5f, 0.5f, 1f);
+            AmbientColor = new Vector3(0.2f, 0.5f, 1f);
         }
     }
 
@@ -132,6 +132,26 @@ namespace MonoGolf
             DiffuseColor = new Vector3(0.05f, 0.05f, 0.05f);
             SpecularColor = new Vector3(0.2f, 0.2f, 0.2f);
             AmbientColor = new Vector3(0.05f, 0.05f, 0.05f);
+        }
+    }
+
+    public class P1Material : ObjectMaterial
+    {
+        public P1Material()
+        {
+            DiffuseColor = new Vector3(0.75f, 0.25f, 0.25f);
+            SpecularColor = new Vector3(0.2f, 0.2f, 0.2f);
+            AmbientColor = new Vector3(0.5f, 0.2f, 0.2f);
+        }
+    }
+
+    public class P2Material : ObjectMaterial
+    {
+        public P2Material()
+        {
+            DiffuseColor = new Vector3(0.25f, 0.75f, 0.25f);
+            SpecularColor = new Vector3(0.2f, 0.2f, 0.2f);
+            AmbientColor = new Vector3(0.2f, 0.5f, 0.2f);
         }
     }
 }

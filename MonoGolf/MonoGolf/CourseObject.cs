@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using BEPUphysics.Entities;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
@@ -65,6 +62,25 @@ namespace MonoGolf
             return new ConvexHull(MathConverter.Convert(pos), verts);
         }
 
+        public static Entity MakeSlope2(Vector3 pos, Vector3 scale)
+        {
+            List<BEPUutilities.Vector3> verts = [];
+            foreach (ModelMeshPart part in Minigolf.MeshList[5].MeshParts)
+            {
+                VertexBuffer vertexBuffer = part.VertexBuffer;
+                int vertexStride = vertexBuffer.VertexDeclaration.VertexStride;
+                int vertexCount = vertexBuffer.VertexCount;
+                float[] vertexData = new float[vertexCount * vertexStride / sizeof(float)];
+                vertexBuffer.GetData(vertexData);
+                for (int i = 0; i < vertexData.Length; i += vertexStride / sizeof(float))
+                {
+                    BEPUutilities.Vector3 vertexPosition = new BEPUutilities.Vector3(vertexData[i] * scale.X, vertexData[i + 1] * scale.Y, vertexData[i + 2] * scale.Z);
+                    verts.Add(vertexPosition);
+                }
+            }
+            return new ConvexHull(MathConverter.Convert(pos), verts);
+        }
+
         public static Entity MakeHole(Vector3 pos)
         {
             List<CompoundShapeEntry> entries = [];
@@ -98,6 +114,10 @@ namespace MonoGolf
     }
 
     public class Tee(Scene scene, Vector3 pos, float r) : CourseObject(scene, Minigolf.MeshList[0], new TeeMaterial(), MakeBox(pos, new Vector3(2f, 0.1f, 2f)), pos, new Vector3(2f, 0.1f, 2f), r, false)
+    {
+    }
+
+    public class Slope2(Scene scene, Vector3 pos, Vector3 scale, float r) : CourseObject(scene, Minigolf.MeshList[5], new FloorMaterial(), MakeSlope2(pos, scale), pos, scale, r, false)
     {
     }
 

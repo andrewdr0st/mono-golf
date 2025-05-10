@@ -61,7 +61,7 @@ namespace MonoGolf
 
         public static float GetScrollAmount()
         {
-            return (mouseState.ScrollWheelValue - prevState.ScrollWheelValue) * scrollSensitivity;
+            return (prevState.ScrollWheelValue - mouseState.ScrollWheelValue) * scrollSensitivity;
         }
     }
 }

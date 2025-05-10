@@ -19,6 +19,7 @@ namespace MonoGolf
         public Minigolf Game { get; private set; }
         protected Space space;
         protected Ball activeBall;
+        protected Ball otherBall;
         protected Entity winPlane;
         protected Scene nextScene;
         private const float launchStrength = 0.6f;
@@ -29,16 +30,25 @@ namespace MonoGolf
         private DrawableObject[] aimIndicators;
         public Camera Camera { get; protected set; }
         public int StrokeCount { get; protected set; }
+        public int StrokeCount2 { get; protected set; }
         private int strokeInc = 1;
+        private int strokeInc2 = 1;
         private float jingleCooldown = 0;
+        public bool TwoPlayer { get; set; }
+        private int pTurn = 1;
+        private bool p2Spawned = false;
+        protected Vector3 spawnPoint;
 
-        protected Scene(Minigolf game)
+        protected Scene(Minigolf game, Vector3 spawnPoint)
         {
             Game = game;
+            this.spawnPoint = spawnPoint;
             space = new Space();
             space.ForceUpdater.Gravity = new BEPUutilities.Vector3(0, -7f, 0);
             Camera = new Camera(0, MathHelper.Pi * 0.25f, Vector3.Zero, MathHelper.PiOver4);
             StrokeCount = 1;
+            StrokeCount2 = 1;
+            TwoPlayer = game.TwoPlayer;
             Entity deathPlane = new Triangle(
                 new BEPUutilities.Vector3(-10000f, -10f, -10000f),
                 new BEPUutilities.Vector3(10000f, -10f, -10000f),
@@ -65,6 +75,9 @@ namespace MonoGolf
                 a.Visible = false;
                 AddGameComponent(a);
             }
+            Ball ball = new Ball(this, spawnPoint, TwoPlayer ? 1 : 0);
+            AddGameComponent(ball);
+            activeBall = ball;
         }
 
         protected void AddGameComponent(DrawableGameComponent c)
@@ -102,8 +115,16 @@ namespace MonoGolf
                     Camera.SetTarget(activeBall.Pos);
                     if (!activeBall.BallActive)
                     {
-                        StrokeCount += strokeInc;
+                        if (pTurn == 1)
+                        {
+                            StrokeCount += strokeInc;
+                        }
+                        else
+                        {
+                            StrokeCount2 += strokeInc2;
+                        }
                         followingBall = false;
+                        SwapBalls();
                     }
                 }
                 else
@@ -187,18 +208,60 @@ namespace MonoGolf
                 Minigolf.SoundEffects[2].Play();
                 jingleCooldown = 1f;
             }
-            strokeInc = 0;
+            if (pTurn == 1)
+            {
+                strokeInc = 0;
+            }
+            else if (pTurn == 2)
+            {
+                strokeInc2 = 0;
+            }
+            if (SwapBalls())
+            {
+                space.Remove(otherBall.Entity);
+                otherBall.Visible = false;
+                followingBall = false;
+                return;
+            }
             Game.HoleFinished();
+        }
+
+        private bool SwapBalls()
+        {
+            if (!TwoPlayer)
+            {
+                return false;
+            }
+            if (pTurn == 1 && strokeInc2 == 0)
+            {
+                return false;
+            }
+            if (pTurn == 2 && strokeInc == 0)
+            {
+                return false;
+            }
+            if (!p2Spawned)
+            {
+                Ball p2 = new Ball(this, spawnPoint, 2);
+                AddGameComponent(p2);
+                otherBall = p2;
+                p2Spawned = true;
+            }
+            (otherBall, activeBall) = (activeBall, otherBall);
+            Camera.SetTarget(activeBall.Pos);
+            pTurn = pTurn == 1 ? 2 : 1;
+            return true;
         }
     }
 
     public class Hole1 : Scene
     {
-        public Hole1(Minigolf game) : base(game)
+        public Hole1(Minigolf game) : base(game, new Vector3(-7f, 2f, 0))
         {
-            Ball ball = new Ball(this, new Vector3(-7f, 2f, 0));
-            AddGameComponent(ball);
-            activeBall = ball;
+            if (TwoPlayer)
+            {
+                activeBall.homePos = new BEPUutilities.Vector3(-10f, 2f, 0);
+            }
             Camera = new Camera(MathHelper.Pi * -0.1f, MathHelper.Pi * 0.25f, activeBall.Pos, MathHelper.PiOver4);
             AddGameComponent(new Tee(this, new Vector3(-7f, 1.1f, 0), 0));
             AddGameComponent(new FloorBox(this, Vector3.Zero, new Vector3(12f, 1f, 8f), 0));
@@ -225,11 +288,12 @@ namespace MonoGolf
 
     public class Hole2 : Scene
     {
-        public Hole2(Minigolf game) : base(game)
+        public Hole2(Minigolf game) : base(game, new Vector3(-17f, 7f, -11f))
         {
-            Ball ball = new Ball(this, new Vector3(-17f, 7f, -11f));
-            AddGameComponent(ball);
-            activeBall = ball;
+            if (TwoPlayer)
+            {
+                activeBall.homePos = new BEPUutilities.Vector3(-17f, 7f, -14f);
+            }
             Camera = new Camera(MathHelper.Pi * -0.5f, MathHelper.Pi * 0.25f, activeBall.Pos, MathHelper.PiOver4);
             AddGameComponent(new Tee(this, new Vector3(-17f, 6.1f, -11f), 0));
             AddGameComponent(new FloorBox(this, new Vector3(-7.5f, 5f, -11f), new Vector3(12.5f, 1f, 5f), 0));
@@ -262,6 +326,19 @@ namespace MonoGolf
             );
             winPlane.CollisionInformation.Events.InitialCollisionDetected += InHole;
             space.Add(winPlane);
+        }
+    }
+
+    class Hole3 : Scene
+    {
+        public Hole3(Minigolf game) : base(game, new Vector3(-17.5f, 7f, 7.5f)) {
+            Camera = new Camera(MathHelper.Pi * -0.25f, MathHelper.Pi * 0.25f, activeBall.Pos, MathHelper.PiOver4);
+            AddGameComponent(new Tee(this, new Vector3(-17.5f, 6.1f, 7.5f), 0));
+            AddGameComponent(new FloorBox(this, new Vector3(0f, 5f, 0f), new Vector3(20f, 1f, 10f), 0));
+            AddGameComponent(new FloorBox(this, new Vector3(5f, 9f, -6f), new Vector3(5f, 5f, 12f), 0));
+            AddGameComponent(new FloorBox(this, new Vector3(-4f, 9f, 2f), new Vector3(4f, 5f, 4f), 0));
+            AddGameComponent(new FloorBox(this, new Vector3(15f, 9f, -11f), new Vector3(5f, 5f, 7f), 0));
+            AddGameComponent(new Slope2(this, new Vector3(-12f, 7f, 2f), new Vector3(1f, 1f, 1f), 0));
         }
     }
 }

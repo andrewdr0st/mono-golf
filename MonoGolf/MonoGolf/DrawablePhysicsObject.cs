@@ -32,20 +32,28 @@ namespace MonoGolf
     public class Ball : DrawablePhysicsObject
     {
         public BoundingSphere BoundingSphere { get; private set; }
-        private BEPUutilities.Vector3 homePos;
+        public BEPUutilities.Vector3 homePos { get; set; }
         public bool BallActive { get; set; }
         private const float ballScale = 0.75f;
         private const float velocityThreshold = 0.4f;
 
-        public Ball(Scene scene, Vector3 pos) : base(scene, Minigolf.MeshList[1], new BallMaterial(), new Sphere(MathConverter.Convert(pos), 0.75f, 0.2f), pos, new Vector3(ballScale))
+        public Ball(Scene scene, Vector3 pos, int player) : base(scene, Minigolf.MeshList[1], new BallMaterial(), new Sphere(MathConverter.Convert(pos), 0.75f, 0.2f), pos, new Vector3(ballScale))
         {
             BoundingSphere = new BoundingSphere(pos, ballScale);
             Entity.Tag = this;
-            Entity.AngularDamping = 0.3f;
-            Entity.LinearDamping = 0.1f;
+            Entity.AngularDamping = 0.15f;
+            Entity.LinearDamping = 0.15f;
             Entity.Material.Bounciness = 0.9f;
             homePos = MathConverter.Convert(pos);
             BallActive = false;
+            if (player == 1)
+            {
+                Material = new P1Material();
+            }
+            else if (player == 2)
+            {
+                Material = new P2Material();
+            }
         }
 
         public override void Update(GameTime gameTime)

@@ -13,8 +13,9 @@ namespace MonoGolf
         private SpriteBatch spriteBatch;
         private SpriteFont font;
         public Scene Scene { get; set; }
+        public bool TwoPlayer { get; set; }
         public static List<ModelMesh> MeshList { get; private set; }
-        private int currentScene = 0;
+        private int currentScene = -1;
         private float transitionTimer = 2f;
         private bool transitioning = false;
         public static List<SoundEffect> SoundEffects { get; private set; }
@@ -52,8 +53,6 @@ namespace MonoGolf
             SoundEffects.Add(Content.Load<SoundEffect>("wall-hit"));
             SoundEffects.Add(Content.Load<SoundEffect>("yay"));
 
-            Scene = new Hole1(this);
-
             base.LoadContent();
         }
 
@@ -74,8 +73,26 @@ namespace MonoGolf
             }
 
             InputManager.Update();
-
-            Scene.Update(gameTime);
+            if (currentScene >= 0)
+            {
+                Scene.Update(gameTime);
+            }
+            else
+            {
+                if (Keyboard.GetState().IsKeyDown(Keys.D1) || Keyboard.GetState().IsKeyDown(Keys.NumPad1))
+                {
+                    TwoPlayer = false;
+                    currentScene = 0;
+                    Scene = new Hole1(this);
+                }
+                else if (Keyboard.GetState().IsKeyDown(Keys.D2) || Keyboard.GetState().IsKeyDown(Keys.NumPad2))
+                {
+                    TwoPlayer = true;
+                    currentScene = 0;
+                    Scene = new Hole1(this);
+                }
+                    
+            }
 
             base.Update(gameTime);
         }
@@ -92,7 +109,24 @@ namespace MonoGolf
             base.Draw(gameTime);
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(font, "Stroke " + Scene.StrokeCount, new Vector2(10, 10), Color.White);
+            if (currentScene == -1)
+            {
+                spriteBatch.DrawString(font, "COSMO GOLF", new Vector2(425, 120), Color.White, 0f, Vector2.Zero, 2f, SpriteEffects.None, 0f);
+                spriteBatch.DrawString(font, "Press 1 for single player", new Vector2(432, 300), Color.White);
+                spriteBatch.DrawString(font, "Press 2 for two player", new Vector2(450, 400), Color.White);
+            }
+            else
+            {
+                if (TwoPlayer)
+                {
+                    spriteBatch.DrawString(font, "P1 " + Scene.StrokeCount, new Vector2(10, 10), Color.Red);
+                    spriteBatch.DrawString(font, "P2 " + Scene.StrokeCount2, new Vector2(10, 50), Color.LimeGreen);
+                }
+                else
+                {
+                    spriteBatch.DrawString(font, "Stroke " + Scene.StrokeCount, new Vector2(10, 10), Color.White);
+                }
+            }
             spriteBatch.End();
         }
 
